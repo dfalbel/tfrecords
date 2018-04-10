@@ -5,20 +5,30 @@
 
 using namespace Rcpp;
 
-// raw_to_char_
-std::string raw_to_char_(const RawVector& x);
-RcppExport SEXP _tfrecords_raw_to_char_(SEXP xSEXP) {
+// DummyExample
+std::string DummyExample();
+RcppExport SEXP _tfrecords_DummyExample() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const RawVector& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(raw_to_char_(x));
+    rcpp_result_gen = Rcpp::wrap(DummyExample());
+    return rcpp_result_gen;
+END_RCPP
+}
+// tfrecord_shutdown
+Rcpp::LogicalVector tfrecord_shutdown();
+RcppExport SEXP _tfrecords_tfrecord_shutdown() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(tfrecord_shutdown());
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tfrecords_raw_to_char_", (DL_FUNC) &_tfrecords_raw_to_char_, 1},
+    {"_tfrecords_DummyExample", (DL_FUNC) &_tfrecords_DummyExample, 0},
+    {"_tfrecords_tfrecord_shutdown", (DL_FUNC) &_tfrecords_tfrecord_shutdown, 0},
     {NULL, NULL, 0}
 };
 

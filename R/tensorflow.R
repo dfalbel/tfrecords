@@ -2,6 +2,20 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
+#' Hello
+#' 
+#' Hello function
+#'
+#' @export
+hello <- function(){
+  "hello"
+}
+
+.onUnload <- function (libpath) {
+  x <- tfrecord_shutdown()
+  library.dynam.unload("tfrecords", libpath)
+}
+
 # library(tensorflow)
 #
 # my_example <- tf$train$Example(features=tf$train$Features(feature=dict(
