@@ -46,17 +46,21 @@ std::string DummyExample () {
   return out;
 }
 
-static const uint32_t kMaskDelta = 0xa282ead8ul;
+// helper functions
 
-inline uint32_t Mask(uint32_t crc) {
+// mask delta constant
+// https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/tensorflow/core/lib/hash/crc32c.h#L33
+const uint32_t kMaskDelta = 0xa282ead8ul;
+
+// making crc
+// https://github.com/tensorflow/tensorflow/blob/754048a0453a04a761e112ae5d99c149eb9910dd/tensorflow/core/lib/hash/crc32c.h#L40
+uint32_t mask(uint32_t crc) {
   return ((crc >> 15) | (crc << 17)) + kMaskDelta;
 };
 
-// auto uint64ToBytes (std::uint64_t x) {
-//   return boost::endian::endian_reverse(x);  
-// }
-
-int GetCrc32(const std::string& my_string) {
+// Get CRC32 rep
+// https://stackoverflow.com/a/39381287/3297472
+int crc32(const std::string& my_string) {
   boost::crc_32_type result;
   result.process_bytes(my_string.data(), my_string.length());
   return result.checksum();
