@@ -5,3 +5,4 @@
 *.tfrecords
 .DS_Store
 .Rapp.history
+*.tfrecords
