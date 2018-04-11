@@ -3,4 +3,4 @@
 
 CXX_STD = CXX11
 CXX=clang++
-PKG_LIBS=-L/usr/local/Cellar/protobuf/3.5.1/lib -lprotobuf -D_THREAD_SAFE
+PKG_LIBS=-L/usr/local/Cellar/protobuf/3.5.1/lib -lprotobuf -D_THREAD_SAFE -L/usr/local/opt/zlib/lib -lz
