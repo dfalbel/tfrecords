@@ -78,12 +78,10 @@ public:
     char length[sizeof(std::uint64_t)];
     EncodeFixed64(length, data.size());
     
-    Rcout << length << "\n";
-    
     char length_crc[sizeof(std::uint32_t)];
     EncodeFixed32(length_crc, masked_crc(length, sizeof(std::uint64_t)));
     
-    Rcout << length_crc << "\n";
+    Rcout << sizeof(std::uint32_t) << "\n";
     
     // char header[sizeof(std::uint64_t) + sizeof(std::uint32_t)];
     // EncodeFixed64(header + 0, data.size());
@@ -106,7 +104,7 @@ public:
     
     this->writer.write(length, sizeof(length));
     this->writer.write(length_crc, sizeof(length));
-    // this->writer.write((char*)&data, sizeof(data));
+    this->writer.write(data.c_str(), data.length());
     // this->writer.write(footer, sizeof(footer));
     // 
     return true;
