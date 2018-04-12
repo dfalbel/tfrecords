@@ -32,6 +32,19 @@ public:
     
   }
   
+  void set_float_var (std::string var_name, Rcpp::NumericVector values) {
+    
+    tensorflow::Feature feat;
+    auto feat_values = feat.mutable_float_list();
+    
+    for (int i=0; i<values.length(); i++) {
+      feat_values->add_value(values[i]);
+    }
+    
+    this->feature->insert(pair_type(var_name, feat));
+    
+  }
+  
   std::string serialize_to_string () {
     std::string out;
     this->example.SerializeToString(&out);
