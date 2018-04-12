@@ -1,10 +1,28 @@
 context("compare to python")
 
-ref_file <- paste0(rprojroot::find_testthat_root_file(), "/files/myints_py.tfrecords")
+# creating reference file -------------------------------------------------
+library(tensorflow)
 
-if (fs::file_exists("example2.tfrecords")) 
-  fs::file_delete("example2.tfrecords")
-tfrecords:::write_test_example("example2.tfrecords")
+my_example = tf$train$Example(features=tf$train$Features(feature=dict(
+  'my_ints'= tf$train$Feature(int64_list=tf$train$Int64List(value=c(0L, 1L, 2L)))
+)))
+
+my_example_str = my_example$SerializeToString()
+
+writer = tf$python_io$TFRecordWriter("example_py.tfrecords")
+writer$write(my_example_str)
+writer$close()
+
+
+# write test file ---------------------------------------------------------
+
+tfrecords:::write_test_example("example_r.tfrecords")
+
+
+# testing -----------------------------------------------------------------
+
+ref_file <- "example_py.tfrecords"
+gen_file <- "example_r.tfrecords"
 
 test_that("writing correctly compared to python", {
   
