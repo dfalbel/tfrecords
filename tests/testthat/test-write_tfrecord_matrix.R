@@ -22,5 +22,4 @@ test_that("writing tfrecord matrix works", {
   
   expect_equal(x, x_recovered)
   
-  
 })
