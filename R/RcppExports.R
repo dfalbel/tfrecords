@@ -9,3 +9,7 @@ tfrecord_shutdown <- function() {
     .Call('_tfrecords_tfrecord_shutdown', PACKAGE = 'tfrecords')
 }
 
+write_tfrecord <- function(x, path) {
+    .Call('_tfrecords_write_tfrecord', PACKAGE = 'tfrecords', x, path)
+}
+

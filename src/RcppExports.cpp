@@ -25,10 +25,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// write_tfrecord
+bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path);
+RcppExport SEXP _tfrecords_write_tfrecord(SEXP xSEXP, SEXP pathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
+    rcpp_result_gen = Rcpp::wrap(write_tfrecord(x, path));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tfrecords_DummyExample", (DL_FUNC) &_tfrecords_DummyExample, 0},
     {"_tfrecords_tfrecord_shutdown", (DL_FUNC) &_tfrecords_tfrecord_shutdown, 0},
+    {"_tfrecords_write_tfrecord", (DL_FUNC) &_tfrecords_write_tfrecord, 2},
     {NULL, NULL, 0}
 };
 
