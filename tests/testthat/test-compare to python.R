@@ -4,14 +4,12 @@ ref_file <- paste0(rprojroot::find_testthat_root_file(), "/files/myints_py.tfrec
 
 if (fs::file_exists("example2.tfrecords")) 
   fs::file_delete("example2.tfrecords")
-tfrecords:::DummyExample()
+tfrecords:::write_test_example("example2.tfrecords")
 
 test_that("writing correctly compared to python", {
   
   ref_file <- readr::read_file_raw(ref_file)
   gen_file <- readr::read_file_raw("example2.tfrecords")
-  
-  
   
   l_ref <- readBin(ref_file[1:8], what = "integer")
   l_gen <- readBin(gen_file[1:8], what = "integer")
@@ -29,5 +27,6 @@ test_that("writing correctly compared to python", {
   expect_equal(l_crc_ref, l_crc_gen)
   expect_equal(data_ref, data_gen)
   expect_equal(data_crc_ref, data_crc_gen)
+  expect_equal(ref_file, gen_file)
 
 })

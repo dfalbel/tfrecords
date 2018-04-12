@@ -9,7 +9,30 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::string DummyExample () {
+bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
+  
+  Example example;
+  RecordWriter writer(path);
+  
+  for (int i=0; i<x.nrow(); i++) {
+    
+    example.set_int_var("x", x(i,_));
+    writer.write_record(example.serialize_to_string());
+    example.clear();
+    
+  }
+  
+  return true;
+} 
+
+// [[Rcpp::export]]
+bool tfrecord_shutdown() {
+  google::protobuf::ShutdownProtobufLibrary();
+  return true;
+}
+
+// [[Rcpp::export]]
+std::string write_test_example (std::string path) {
   
   // Create Example
   tensorflow::Example example;
@@ -28,40 +51,8 @@ std::string DummyExample () {
   std::string out;
   example.SerializeToString(&out);
   
-  
-  RecordWriter rec_writer("example2.tfrecords");
+  RecordWriter rec_writer(path);
   rec_writer.write_record(out);
-  
-  // std::ofstream myfile;
-  // myfile.open ("example.tfrecords");
-  // myfile << out << std::endl;
-  // myfile.close();
-  // 
-  // Rcout << out << "\n";
   
   return out;
 }
-
-// [[Rcpp::export]]
-Rcpp::LogicalVector tfrecord_shutdown() {
-  google::protobuf::ShutdownProtobufLibrary();
-  return 1;
-}
-
-// [[Rcpp::export]]
-bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
-  
-  Example example;
-  RecordWriter writer(path);
-  
-  for (int i=0; i<x.nrow(); i++) {
-    
-    example.set_int_var("x", x(i,_));
-    writer.write_record(example.serialize_to_string());
-    example.clear();
-    
-  }
-  
-  return true;
-} 
-

@@ -8,6 +8,9 @@ parse_function <- function(example_proto) {
   tf$parse_single_example(example_proto, features)
 }
 
+if (fs::file_exists("example.tfrecords"))
+  fs::file_delete("example.tfrecords")
+
 test_that("writing tfrecord matrix works", {
   
   x <- matrix(1:1000, nrow = 100, ncol = 10)
