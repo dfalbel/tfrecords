@@ -25,3 +25,9 @@ microbenchmark::microbenchmark(
   tensorflow = write_tfrecords_tf(x, "example2.tfrecords"), 
   times = 5
 )
+
+identical(
+  readr::read_file_raw("example.tfrecords"),
+  readr::read_file_raw("example2.tfrecords")
+)
+
