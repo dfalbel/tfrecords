@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stddef.h>
 #include "RecordWriter.h"
+#include "Example.h"
 
 using namespace Rcpp;
 
@@ -41,10 +42,26 @@ std::string DummyExample () {
   return out;
 }
 
-
 // [[Rcpp::export]]
 Rcpp::LogicalVector tfrecord_shutdown() {
   google::protobuf::ShutdownProtobufLibrary();
   return 1;
 }
+
+// [[Rcpp::export]]
+bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
+  
+  Example example;
+  RecordWriter writer(path);
+  
+  for (int i=0; i<x.nrow(); i++) {
+    
+    example.set_int_var("x", x(i,_));
+    writer.write_record(example.serialize_to_string());
+    example.clear();
+    
+  }
+  
+  return true;
+} 
 

@@ -7,11 +7,11 @@ using namespace Rcpp;
 
 // some changes from:
 // https://github.com/tensorflow/tensorflow/blob/master/tensorflow/core/lib/core/coding.cc#L43
-void EncodeFixed64(char* buf, std::uint64_t value) {
+void encode_fixed_64(char* buf, std::uint64_t value) {
   memcpy(buf, &value, sizeof(value));
 }
 
-void EncodeFixed32(char* buf, std::uint32_t value) {
+void encode_fixed_32(char* buf, std::uint32_t value) {
   memcpy(buf, &value, sizeof(value));
 }
 
@@ -60,14 +60,14 @@ public:
     //  uint32    masked crc of data
     
     char length[sizeof(std::uint64_t)];
-    EncodeFixed64(length, data.size());
+    encode_fixed_64(length, data.size());
     
     char length_crc[sizeof(std::uint32_t)];
-    EncodeFixed32(length_crc, masked_crc(length, sizeof(std::uint64_t)));
+    encode_fixed_32(length_crc, masked_crc(length, sizeof(std::uint64_t)));
     
     char data_crc[sizeof(std::uint32_t)];
     char * data_array = const_cast<char*>(data.c_str());
-    EncodeFixed32(data_crc, masked_crc(data_array, data.size()));
+    encode_fixed_32(data_crc, masked_crc(data_array, data.size()));
     
     this->writer.write(length, sizeof(length));
     this->writer.write(length_crc, sizeof(length_crc));
