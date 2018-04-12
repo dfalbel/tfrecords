@@ -43,7 +43,6 @@ bool write_tfrecords (Rcpp::List data, std::string path) {
       case REALSXP: {
         auto x = Rcpp::as<Rcpp::NumericMatrix>(data[j]);
         example.set_float_var(var_names[j], x(i,_));
-        example.clear();
         break;
       }
       
@@ -63,6 +62,7 @@ bool write_tfrecords (Rcpp::List data, std::string path) {
     }
     
     writer.write_record(example.serialize_to_string());
+    example.clear();
   }
   
   return true;
