@@ -68,6 +68,11 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
           
         }
         
+      } if (klass == "dgCMatrix") {
+        
+        // TODO
+        // arma::sp_mat x = as<arma::sp_mat>(data[j]);
+        
       } else {
         
         Rcpp::stop("Invalid class.");

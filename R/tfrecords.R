@@ -2,10 +2,10 @@
 #' @importFrom Rcpp sourceCpp
 NULL
 
-# .onUnload <- function (libpath) {
-#   x <- tfrecord_shutdown()
-#   library.dynam.unload("tfrecords", libpath)
-# }
+.onUnload <- function (libpath) {
+  x <- tfrecord_shutdown()
+  library.dynam.unload("tfrecords", libpath)
+}
 
 
 #' Write tfrecords from a list of data.
@@ -23,9 +23,7 @@ NULL
 #'
 #'
 write_tfrecords <- function (data, path) {
-  
   desc <- lapply(data, get_class_and_type)
-  
   write_tfrecords_(data, desc, path)
 }
 
