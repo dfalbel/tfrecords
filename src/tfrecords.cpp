@@ -1,12 +1,18 @@
 // [[Rcpp::depends(BH)]]
+// [[Rcpp::depends(RcppArmadillo)]]
 #include "example.pb.h" // needs to be included first because of the Free macro
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include <fstream>
 #include <stddef.h>
+#include <typeinfo>
 #include "RecordWriter.h"
 #include "Example.h"
 
 using namespace Rcpp;
+
+const std::string arma_type_name = "N4arma5SpMatIdEE";
+
+
 
 // [[Rcpp::export]]
 bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
@@ -26,7 +32,7 @@ bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
 } 
 
 // [[Rcpp::export]]
-bool write_tfrecords (Rcpp::List data, std::string path) {
+bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
   
   int n = Rcpp::as<Rcpp::NumericMatrix>(data[0]).nrow();
   int l = data.length();
@@ -35,32 +41,62 @@ bool write_tfrecords (Rcpp::List data, std::string path) {
   Example example;
   RecordWriter writer(path);
   
+  Rcpp::List d;
+  
   for (int i=0; i<n; i++) {
     for (int j=0; j<l; j++) {
       
-      switch (TYPEOF(data[j])) {
+      d = desc[j];
+      std::string klass = d["class"];
+      std::string type = d["type"];
+      
+      if ( klass == "matrix" ) {
         
-      case REALSXP: {
-        auto x = Rcpp::as<Rcpp::NumericMatrix>(data[j]);
-        example.set_float_var(var_names[j], x(i,_));
-        break;
+        
+        if ( type == "integer" ) {
+          
+          auto x = as<Rcpp::IntegerMatrix>(data[j]);
+          example.set_int_var(var_names[j], x(i,_));
+          
+        } else if ( type == "double" ) {
+          
+          auto x = Rcpp::as<Rcpp::NumericMatrix>(data[j]);
+          example.set_float_var(var_names[j], x(i,_));
+          
+        } else {
+          
+          Rcpp::stop("Invalid matrix type.");
+          
+        }
+        
+      } else if (klass == "dgCMatrix") {
+        
+        arma::sp_mat x = as<arma::sp_mat>(data[j]);
+        arma::sp_rowvec row = x.row(i);
+
+        arma::sp_rowvec::const_iterator start = row.begin();
+        arma::sp_rowvec::const_iterator end   = row.end();
+        
+        Rcpp::IntegerVector index;
+        Rcpp::NumericVector value;
+
+        for (arma::sp_rowvec::const_iterator it = start; it != end; ++it) {
+          index.push_back(it.col());
+          value.push_back(*it);
+        }
+
+        example.set_int_var("index_" + var_names[j], index);
+        example.set_float_var("value_" + var_names[j], value);
+        
+        
+      } else {
+        
+        Rcpp::stop("Invalid class.");
+        
       }
       
-      case INTSXP: {
-        if (Rf_isFactor(data[0])) break; // factors have internal type INTSXP too
-        auto x = as<Rcpp::IntegerMatrix>(data[0]);
-        example.set_int_var(var_names[j], x(i,_));
-        break;
-      }
-        
-      default: {
-        stop("Invalid matrix. We only write numeric and integer matrix.");
-      }
-        
-      }
+    }  
       
-    }
-    
     writer.write_record(example.serialize_to_string());
     example.clear();
   }
