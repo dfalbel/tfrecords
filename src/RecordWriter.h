@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 #include <fstream>
-#include "crc.hpp"
+#include "crc.h"
 using namespace Rcpp;
 
 // helper functions

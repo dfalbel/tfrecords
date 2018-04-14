@@ -11,6 +11,7 @@ NULL
 #' Write tfrecords from a list of data.
 #'
 #' @param data list of data.
+#' @param path path to write the tfrecord file.
 #'
 #' @export
 #' 
@@ -30,6 +31,7 @@ write_tfrecords <- function (data, path) {
 
 #' Get classes and value types from an object supported.
 #'
+#' @param x list of data structures
 #'
 get_class_and_type <- function (x) {
   

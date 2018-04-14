@@ -6,6 +6,9 @@
 \usage{
 get_class_and_type(x)
 }
+\arguments{
+\item{x}{list of data structures}
+}
 \description{
 Get classes and value types from an object supported.
 }

@@ -8,6 +8,8 @@ write_tfrecords(data, path)
 }
 \arguments{
 \item{data}{list of data.}
+
+\item{path}{path to write the tfrecord file.}
 }
 \description{
 Write tfrecords from a list of data.
