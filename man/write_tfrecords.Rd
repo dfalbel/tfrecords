@@ -16,8 +16,9 @@ Write tfrecords from a list of data.
 data <- list(
  x = matrix(1:1000, nrow = 100),
  y = matrix(1:1000/2.1, nrow = 100),
- z = Matrix::Matrix(sample(0:1, prob = c(0.9, 0.1), size = 1000, replace = TRUE), nrow = 100)
+ z = Matrix::rsparsematrix(nrow = 100, ncol = 10, density = 0.3)
  )
-
+ 
+ write_tfrecords(data, "example.tfrecords")
 
 }

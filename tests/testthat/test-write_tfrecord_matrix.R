@@ -35,3 +35,43 @@ test_that("writing a list of matrix", {
   expect_equal(x, x_recovered$x)
   expect_equivalent(y, x_recovered$y, tolerance = 2e-7) # it can be different because of floating points convertion
 })
+
+if (fs::file_exists("examplelist.tfrecords"))
+  fs::file_delete("examplelist.tfrecords")
+
+set.seed(1)
+
+test_that("support for sparse matrix", {
+  
+  data <- list(
+    x = matrix(1:1000, nrow = 100),
+    y = matrix(1:1000/2.1, nrow = 100),
+    z = Matrix::rsparsematrix(nrow = 100, ncol = 10, density = 0.3)
+    )
+  
+  write_tfrecords(data, "examplelist.tfrecords")
+  
+  parse_function <- function(example_proto) {
+    features = dict(
+      "x" = tf$FixedLenFeature(shape(10), tf$int64),
+      "y" = tf$FixedLenFeature(shape(10), tf$float32),
+      "z" = tf$SparseFeature(index_key = "index_z", value_key = "value_z", dtype = tf$float32, size = 10L)
+    )
+    features <- tf$parse_single_example(example_proto, features)
+    features$z <- tf$sparse_tensor_to_dense(features$z)
+    features
+  }
+  
+  df <- tfrecord_dataset("examplelist.tfrecords")
+  df <- df %>% dataset_map(parse_function)
+  df <- df %>% dataset_batch(100)
+  batch <- next_batch(df)
+  sess <- tf$Session()
+  x_recovered <- sess$run(batch)
+  
+  expect_equal(data$x, x_recovered$x)
+  expect_equivalent(data$y, x_recovered$y, tolerance = 2e-7) # it can be different because of floating points convertion
+  expect_equivalent(as.matrix(data$z), x_recovered$z, tolerance = 2e-7) # it can be different because of floating points convertion
+})
+
+

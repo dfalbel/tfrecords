@@ -52,6 +52,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
       
       if ( klass == "matrix" ) {
         
+        
         if ( type == "integer" ) {
           
           auto x = as<Rcpp::IntegerMatrix>(data[j]);
@@ -68,10 +69,25 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
           
         }
         
-      } if (klass == "dgCMatrix") {
+      } else if (klass == "dgCMatrix") {
         
-        // TODO
-        // arma::sp_mat x = as<arma::sp_mat>(data[j]);
+        arma::sp_mat x = as<arma::sp_mat>(data[j]);
+        arma::sp_rowvec row = x.row(i);
+
+        arma::sp_rowvec::const_iterator start = row.begin();
+        arma::sp_rowvec::const_iterator end   = row.end();
+        
+        Rcpp::IntegerVector index;
+        Rcpp::NumericVector value;
+
+        for (arma::sp_rowvec::const_iterator it = start; it != end; ++it) {
+          index.push_back(it.col());
+          value.push_back(*it);
+        }
+
+        example.set_int_var("index_" + var_names[j], index);
+        example.set_float_var("value_" + var_names[j], value);
+        
         
       } else {
         
