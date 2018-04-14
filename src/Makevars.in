@@ -1,0 +1,6 @@
+PKG_CPPFLAGS=@cflags@
+PKG_LIBS=@libs@ -D_THREAD_SAFE
+CXX_STD = CXX11
+CXX=clang++
+#protoc -I "src/proto/" --cpp_out="src/" "src/proto/example.proto"
+#protoc -I "src/proto/" --cpp_out="src/" "src/proto/feature.proto"
