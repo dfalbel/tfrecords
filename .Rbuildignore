@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^.*\.tfrecords$
 ^benchmark.*$
+^\.travis\.yml$
