@@ -1,18 +1,17 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
-sudo: false
+sudo: true
 
 cache:
   packages: true
   directories:
     - $HOME/.cache/pip
 
-addons:
-  apt:
-    packages:
-    - libprotobuf-dev
-    
 before_script:
   - pip2.7 install --upgrade --ignore-installed --user travis pip setuptools wheel virtualenv
   - R -e 'tensorflow::install_tensorflow()'
+  - curl https://github.com/google/protobuf/releases/download/v3.5.1/protoc-3.5.1-linux-x86_64.zip
+  - unzip protoc-3.5.1-linux-x86_64.zip -d protoc3
+  - sudo mv protoc3/bin/* /usr/local/bin/
+  - sudo mv protoc3/include/* /usr/local/include/
