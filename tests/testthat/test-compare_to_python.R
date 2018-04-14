@@ -27,7 +27,7 @@ gen_file <- "example_r.tfrecords"
 test_that("writing correctly compared to python", {
   
   ref_file <- readr::read_file_raw(ref_file)
-  gen_file <- readr::read_file_raw("example2.tfrecords")
+  gen_file <- readr::read_file_raw(gen_file)
   
   l_ref <- readBin(ref_file[1:8], what = "integer")
   l_gen <- readBin(gen_file[1:8], what = "integer")
