@@ -1,4 +1,3 @@
-PKG_CPPFLAGS=@cflags@
 PKG_LIBS=@libs@ -D_THREAD_SAFE
 CXX_STD = CXX11
 CXX=clang++
