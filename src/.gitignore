@@ -1,3 +1,8 @@
 *.o
 *.so
 *.dll
+Makevars
+example.pb.cc
+example.pb.h
+feature.pb.cc
+feature.pb.h

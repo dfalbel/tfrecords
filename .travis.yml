@@ -1,0 +1,27 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+sudo: true
+
+addons:
+  apt:
+    packages:
+    - autoconf 
+    - automake 
+    - libtool
+    - curl
+    - make 
+    - g++ 
+    - unzip
+  
+
+cache:
+  packages: true
+  directories:
+    - $HOME/.cache/pip
+
+before_script:
+  - pip2.7 install --upgrade --ignore-installed --user travis pip setuptools wheel virtualenv protobuf
+  - R -e 'tensorflow::install_tensorflow()'
+  - bash tools/install-protobuf.sh
+
