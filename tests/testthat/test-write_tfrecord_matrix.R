@@ -7,15 +7,14 @@ library(reticulate)
 os <- import("os")
 x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
 
-if (fs::file_exists("examplelist.tfrecords"))
-  fs::file_delete("examplelist.tfrecords")
+temp <- tempfile()
 
 test_that("writing a list of matrix", {
   
   x <- matrix(1:1000, nrow = 100, ncol = 10)
   y <- matrix(runif(1000), nrow = 100, ncol = 10)
   
-  tfrecords::write_tfrecords(list(x = x, y = y), "examplelist.tfrecords")
+  tfrecords::write_tfrecords(list(x = x, y = y), temp)
   
   parse_function <- function(example_proto) {
     features = dict(
@@ -25,7 +24,7 @@ test_that("writing a list of matrix", {
     tf$parse_single_example(example_proto, features)
   }
   
-  suppressWarnings(suppressMessages(df <- tfrecord_dataset("examplelist.tfrecords")))
+  suppressWarnings(suppressMessages(df <- tfrecord_dataset(temp)))
   df <- df %>% dataset_map(parse_function)
   df <- df %>% dataset_batch(100)
   batch <- next_batch(df)
@@ -36,8 +35,7 @@ test_that("writing a list of matrix", {
   expect_equivalent(y, x_recovered$y, tolerance = 2e-7) # it can be different because of floating points convertion
 })
 
-if (fs::file_exists("examplelist.tfrecords"))
-  fs::file_delete("examplelist.tfrecords")
+temp <- tempfile()
 
 set.seed(1)
 
@@ -49,7 +47,7 @@ test_that("support for sparse matrix", {
     z = Matrix::rsparsematrix(nrow = 100, ncol = 10, density = 0.3)
     )
   
-  write_tfrecords(data, "examplelist.tfrecords")
+  write_tfrecords(data, temp)
   
   parse_function <- function(example_proto) {
     features = dict(
@@ -62,7 +60,7 @@ test_that("support for sparse matrix", {
     features
   }
   
-  df <- tfrecord_dataset("examplelist.tfrecords")
+  df <- tfrecord_dataset(temp)
   df <- df %>% dataset_map(parse_function)
   df <- df %>% dataset_batch(100)
   batch <- next_batch(df)

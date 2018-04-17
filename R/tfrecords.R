@@ -26,7 +26,8 @@ NULL
 #'
 write_tfrecords <- function (data, path) {
   desc <- lapply(data, get_class_and_type)
-  invisible(write_tfrecords_(data, desc, path))
+  n_obs <- get_n_obs(data)
+  invisible(write_tfrecords_(data, desc, n_obs, path))
 }
 
 #' Get classes and value types from an object supported.
@@ -34,19 +35,51 @@ write_tfrecords <- function (data, path) {
 #' @param x list of data structures
 #'
 get_class_and_type <- function (x) {
-  
-  k <- as.character(class(x))
-  
-  if (k == "matrix") {
+
+  if (inherits(x, "matrix")) {
     type <- typeof(x)
-  } else if (k == "dgCMatrix") {
+    k    <- "matrix"
+    dimension <- NULL
+  } else if (inherits(x, "dgCMatrix")) {
     type <- typeof(x@x)
+    k    <- "dgCMatrix"
+    dimension <- NULL
+  } else if (inherits(x, "array")) {
+    type <- typeof(x)
+    k    <- "array" 
+    dimension <- dim(x)
   }
   
   list(
     class = k,
-    type = type
+    type  = type,
+    dimension = dimension
   )
 }
 
+#' Number of observations
+#' 
+#' @param x list of data 
+#'
+get_n_obs <- function(x) {
+  
+  n_obs <- sapply(x, function(i) {
+    if (inherits(i, "matrix")) {
+      return(nrow(i))
+    } else if (inherits(i, "dgCMatrix")) {
+      return(nrow(i))
+    } else if (inherits(i, "array")) {
+      return(dim(i)[1])
+    }
+  })
+  
+  if(length(unique(n_obs)) > 1) {
+    stop(
+      "Each element of the list must have the same number of observations, but had: ", 
+      paste(unique(n_obs), collapse = ", ")
+      )
+  }
+  
+  unique(n_obs)
+}
 

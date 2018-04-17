@@ -19,15 +19,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_tfrecords_
-bool write_tfrecords_(Rcpp::List data, Rcpp::List desc, std::string path);
-RcppExport SEXP _tfrecords_write_tfrecords_(SEXP dataSEXP, SEXP descSEXP, SEXP pathSEXP) {
+bool write_tfrecords_(Rcpp::List data, Rcpp::List desc, int n, std::string path);
+RcppExport SEXP _tfrecords_write_tfrecords_(SEXP dataSEXP, SEXP descSEXP, SEXP nSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type data(dataSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
     Rcpp::traits::input_parameter< std::string >::type path(pathSEXP);
-    rcpp_result_gen = Rcpp::wrap(write_tfrecords_(data, desc, path));
+    rcpp_result_gen = Rcpp::wrap(write_tfrecords_(data, desc, n, path));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -55,7 +56,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tfrecords_write_tfrecord", (DL_FUNC) &_tfrecords_write_tfrecord, 2},
-    {"_tfrecords_write_tfrecords_", (DL_FUNC) &_tfrecords_write_tfrecords_, 3},
+    {"_tfrecords_write_tfrecords_", (DL_FUNC) &_tfrecords_write_tfrecords_, 4},
     {"_tfrecords_tfrecord_shutdown", (DL_FUNC) &_tfrecords_tfrecord_shutdown, 0},
     {"_tfrecords_write_test_example", (DL_FUNC) &_tfrecords_write_test_example, 1},
     {NULL, NULL, 0}
