@@ -96,5 +96,10 @@ echo "Using PKG_LIBS=$PKG_LIBS"
 # Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
 
+# Compile proto files
+echo "Compiling proto files."
+protoc -I "src/proto/" --cpp_out="src/" "src/proto/example.proto"
+protoc -I "src/proto/" --cpp_out="src/" "src/proto/feature.proto"
+
 # Success
 exit 0
