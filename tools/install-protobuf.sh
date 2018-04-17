@@ -13,5 +13,5 @@ cd proto-run3/protobuf-3.5.1/
 ./configure
 make
 make check
-sudo make install
-sudo ldconfig # refresh shared library cache.
+make install
+ldconfig # refresh shared library cache.
