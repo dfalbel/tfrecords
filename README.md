@@ -1,6 +1,6 @@
 # tfrecords
 
-[![Travis-CI Build Status](https://travis-ci.org/dfalbel/tfrecords.svg?branch=master)](https://travis-ci.org/dfalbel/rccess)
+[![Travis-CI Build Status](https://travis-ci.org/dfalbel/tfrecords.svg?branch=master)](https://travis-ci.org/dfalbel/tfrecords)
 
 Write tfrecords from R
 
