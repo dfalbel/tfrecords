@@ -3,3 +3,4 @@
 ^.*\.tfrecords$
 ^benchmark.*$
 ^\.travis\.yml$
+^\proto.*$
