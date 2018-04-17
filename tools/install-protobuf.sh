@@ -9,7 +9,7 @@
 # install runtime
 curl -OL https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip
 unzip protobuf-cpp-3.5.1.zip -d proto-run3
-cd proto-run3
+cd proto-run3/protobuf-3.5.1/
 ./configure
 make
 make check
