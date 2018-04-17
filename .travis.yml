@@ -16,3 +16,7 @@ cache:
 before_script:
   - pip2.7 install --upgrade --ignore-installed --user travis pip setuptools wheel virtualenv
   - R -e 'tensorflow::install_tensorflow()'
+  - curl -OL https://github.com/google/protobuf/releases/download/v3.5.1/protoc-3.5.1-linux-x86_64.zip
+  - unzip -p protoc-3.5.1-linux-x86_64.zip protoc > $HOME/.local/bin/protoc
+  - chmod a+x $HOME/.local/bin/protoc
+  - rm -f protoc-3.5.1-linux-x86_64.zip
