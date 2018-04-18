@@ -33,6 +33,8 @@ write_tfrecords <- function (data, path) {
 
 #' Transpose arrays
 #' 
+#' @param data list of data
+#' 
 transpose_arrays <- function(data) {
   lapply(data, function(x) {
     if(is.array(x) & !is.matrix(x))
