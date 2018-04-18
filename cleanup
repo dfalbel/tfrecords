@@ -1,2 +1,6 @@
 #!/bin/sh
 rm -f src/Makevars
+rm -f src/example.pb.h
+rm -f src/example.pb.cc
+rm -f src/feature.pb.h
+rm -f src/feature.pb.cc

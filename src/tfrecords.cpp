@@ -10,9 +10,6 @@
 
 using namespace Rcpp;
 
-const std::string arma_type_name = "N4arma5SpMatIdEE";
-
-
 
 // [[Rcpp::export]]
 bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
@@ -32,9 +29,8 @@ bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
 } 
 
 // [[Rcpp::export]]
-bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
+bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path) {
   
-  int n = Rcpp::as<Rcpp::NumericMatrix>(data[0]).nrow();
   int l = data.length();
   std::vector<std::string> var_names = data.names();
   
@@ -65,7 +61,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
           
         } else {
           
-          Rcpp::stop("Invalid matrix type.");
+          Rcpp::stop("Invalid matrix type: ", type);
           
         }
         
@@ -73,20 +69,57 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
         
         arma::sp_mat x = as<arma::sp_mat>(data[j]);
         arma::sp_rowvec row = x.row(i);
-
+        
         arma::sp_rowvec::const_iterator start = row.begin();
         arma::sp_rowvec::const_iterator end   = row.end();
         
         Rcpp::IntegerVector index;
         Rcpp::NumericVector value;
-
+        
         for (arma::sp_rowvec::const_iterator it = start; it != end; ++it) {
           index.push_back(it.col());
           value.push_back(*it);
         }
-
+        
         example.set_int_var("index_" + var_names[j], index);
         example.set_float_var("value_" + var_names[j], value);
+        
+        
+      } else if (klass == "array") {
+        
+        Rcpp::IntegerVector dim = as<Rcpp::IntegerVector>(d["dimension"]);
+        int dim_size = 1;
+        for (int d=1; d<dim.length(); d++) { // starts at 1 to avoid the first dim
+          dim_size = dim_size*dim[d]; 
+        }
+        
+        if (type == "integer") {
+          
+          Rcpp::IntegerVector x = as<Rcpp::IntegerVector>(data[j]);
+          Rcpp::IntegerVector res(dim_size);
+          
+          for (int l = 0; l<dim_size; l++) {
+            res[l] = x[i*dim_size + l];
+          }
+          
+          example.set_int_var(var_names[j], res);
+          
+        } else if (type == "double") {
+          
+          Rcpp::NumericVector x = as<Rcpp::NumericVector>(data[j]);
+          Rcpp::NumericVector res(dim_size);
+          
+          for (int l = 0; l<dim_size; l++) {
+            res[l] = x[i*dim_size + l];
+          }
+          
+          example.set_float_var(var_names[j], res);
+          
+        } else {
+          
+          Rcpp::stop("Invalid array type: ", type);
+          
+        }
         
         
       } else {
@@ -96,7 +129,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, std::string path) {
       }
       
     }  
-      
+    
     writer.write_record(example.serialize_to_string());
     example.clear();
   }
