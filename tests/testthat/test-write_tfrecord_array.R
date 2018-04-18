@@ -7,7 +7,7 @@ library(reticulate)
 os <- import("os")
 x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
 
-temp <- "test.tfrecords"#tempfile()
+temp <- tempfile()
 
 test_that("writing a list of arrays", {
   
