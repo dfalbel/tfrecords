@@ -50,7 +50,7 @@ transpose_arrays <- function(data) {
 #'
 get_class_and_type <- function (x) {
 
-  if (inherits(x, "matrix")) {
+  if (is.matrix(x)) {
     type <- typeof(x)
     k    <- "matrix"
     dimension <- NULL
@@ -58,11 +58,11 @@ get_class_and_type <- function (x) {
     type <- typeof(x@x)
     k    <- "dgCMatrix"
     dimension <- NULL
-  } else if (inherits(x, "array")) {
+  } else if (is.array(x)) {
     type <- typeof(x)
     k    <- "array" 
     dimension <- dim(x)
-  }
+  } 
   
   list(
     class = k,
@@ -96,4 +96,6 @@ get_n_obs <- function(x) {
   
   unique(n_obs)
 }
+
+
 
