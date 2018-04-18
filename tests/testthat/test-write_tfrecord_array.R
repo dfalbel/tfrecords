@@ -12,7 +12,7 @@ temp <- "test.tfrecords"#tempfile()
 test_that("writing a list of arrays", {
   
   x <- matrix(1:1000, nrow = 100, ncol = 10)
-  y <- array(1:1000, dim = c(100, 2, 5))
+  y <- array(1:3000, dim = c(100, 5, 2, 3))
   z <- array(1:1000, dim = c(100, 2, 5))
   
   tfrecords::write_tfrecords(list(x = x, y = y, z = z), temp)
@@ -20,7 +20,7 @@ test_that("writing a list of arrays", {
   parse_function <- function(example_proto) {
     features = dict(
       "x" = tf$FixedLenFeature(shape(10), tf$int64),
-      "y" = tf$FixedLenFeature(shape(2, 5), tf$float32),
+      "y" = tf$FixedLenFeature(shape(5, 2, 3), tf$int64),
       "z" = tf$FixedLenFeature(shape(2, 5), tf$int64)
       )
     tf$parse_single_example(example_proto, features)
@@ -34,7 +34,7 @@ test_that("writing a list of arrays", {
   x_recovered <- sess$run(batch)
   
   expect_equal(x, x_recovered$x)
-  expect_equivalent(y, x_recovered$y, tolerance = 2e-7) # it can be different because of floating points convertion
+  expect_equivalent(y, x_recovered$y) 
   expect_equal(z, x_recovered$z)
 })
 

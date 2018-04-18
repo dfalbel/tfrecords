@@ -7,7 +7,6 @@
 #include <typeinfo>
 #include "RecordWriter.h"
 #include "Example.h"
-#include "Array.h"
 
 using namespace Rcpp;
 
@@ -88,17 +87,33 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
         
       } else if (klass == "array") {
         
+        Rcpp::IntegerVector dim = as<Rcpp::IntegerVector>(d["dimension"]);
+        int dim_size = 1;
+        for (int d=1; d<dim.length(); d++) { // starts at 1 to avoid the first dim
+          dim_size = dim_size*dim[d]; 
+        }
+        
         if (type == "integer") {
           
-          Rcpp::IntegerVector x_ = as<Rcpp::IntegerVector>(data[j]);
-          Rcpp::IntegerVector dim = as<Rcpp::IntegerVector>(d["dimension"]);
-          IntegerArray x(x_, dim);
-          example.set_int_var(var_names[j], x.get_obs(i));
+          Rcpp::IntegerVector x = as<Rcpp::IntegerVector>(data[j]);
+          Rcpp::IntegerVector res(dim_size);
+          
+          for (int l = 0; l<dim_size; l++) {
+            res[l] = x[i*dim_size + l];
+          }
+          
+          example.set_int_var(var_names[j], res);
           
         } else if (type == "double") {
           
           Rcpp::NumericVector x = as<Rcpp::NumericVector>(data[j]);
-          example.set_float_var(var_names[j], x);
+          Rcpp::NumericVector res(dim_size);
+          
+          for (int l = 0; l<dim_size; l++) {
+            res[l] = x[i*dim_size + l];
+          }
+          
+          example.set_float_var(var_names[j], res);
           
         } else {
           
