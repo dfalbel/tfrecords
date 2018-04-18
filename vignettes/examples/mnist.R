@@ -1,0 +1,48 @@
+library(keras)
+library(tfdatasets)
+library(tensorflow)
+library(tfrecords)
+
+mnist <- dataset_mnist()
+mnist$train$y <- matrix(mnist$train$y, ncol = 1)
+write_tfrecords(mnist$train, "mnist_train.tfrecords")
+
+parse_fun <- function(example_proto) {
+  features = dict(
+    "x" = tf$FixedLenFeature(shape(28, 28, 1), tf$int64),
+    "y" = tf$FixedLenFeature(shape(1), tf$int64)
+  )
+  feat <- tf$parse_single_example(example_proto, features)
+  feat$y <- tf$one_hot(tf$cast(feat$y, tf$int32), 10L)
+  list(feat$x, tf$squeeze(feat$y))
+}
+
+df <- tfrecord_dataset("mnist_train.tfrecords")
+df <- df %>% dataset_map(parse_fun)
+df <- df %>% dataset_batch(100)
+batch <- next_batch(df)
+
+model <- keras_model_sequential()
+model %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu',
+                input_shape = c(28, 28, 1)) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(3,3), activation = 'relu') %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>% 
+  layer_dropout(rate = 0.25) %>% 
+  layer_flatten() %>% 
+  layer_dense(units = 128, activation = 'relu') %>% 
+  layer_dropout(rate = 0.5) %>% 
+  layer_dense(units = 10, activation = 'softmax')
+
+# Compile model
+model %>% compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adadelta(),
+  metrics = c('accuracy')
+)
+
+history <- model %>% fit_generator(
+  generator = df,
+  steps_per_epoch = 10,
+  epochs = 10
+)
