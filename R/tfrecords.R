@@ -27,13 +27,19 @@ NULL
 write_tfrecords <- function (data, path) {
   desc <- lapply(data, get_class_and_type)
   n_obs <- get_n_obs(data)
-  data <- lapply(data, function(x) {
+  data <- transpose_arrays(data)
+  invisible(write_tfrecords_(data, desc, n_obs, path))
+}
+
+#' Transpose arrays
+#' 
+transpose_arrays <- function(data) {
+  lapply(data, function(x) {
     if(is.array(x) & !is.matrix(x))
-       aperm(x, length(dim(x)):1)
+      aperm(x, length(dim(x)):1)
     else
       x
   })
-  invisible(write_tfrecords_(data, desc, n_obs, path))
 }
 
 #' Get classes and value types from an object supported.
