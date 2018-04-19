@@ -23,7 +23,7 @@ write_tfrecords_tf <- function(x, path) {
 tf$VERSION # finish loading TF
 
 microbenchmark::microbenchmark(
-  tfrecords = tfrecords:::write_tfrecord(x, "example.tfrecords"),
+  tfrecords = tfrecords::write_tfrecords(list(x = x), "example.tfrecords"),
   tensorflow = write_tfrecords_tf(x, "example2.tfrecords"), 
   times = 10
 )
