@@ -1,3 +1,25 @@
+---
+title: "Writing MNIST to TFRecords"
+author: "Daniel Falbel"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+We will show how you can write a `.tfrecords` file using `tfrecords` package, next we will
+train a simple model using MNIST dataset, loading it directly from the tfrecords file.
+
+```{r, eval=FALSE}
 library(keras)
 library(tfdatasets)
 library(tensorflow)
@@ -20,7 +42,6 @@ parse_fun <- function(example_proto) {
 df <- tfrecord_dataset("mnist_train.tfrecords")
 df <- df %>% dataset_map(parse_fun)
 df <- df %>% dataset_batch(100)
-batch <- next_batch(df)
 
 model <- keras_model_sequential()
 model %>%
@@ -46,3 +67,6 @@ history <- model %>% fit_generator(
   steps_per_epoch = 10,
   epochs = 10
 )
+
+```
+
