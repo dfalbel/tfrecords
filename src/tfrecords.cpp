@@ -1,7 +1,7 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::depends(RcppArmadillo)]]
 #include "example.pb.h" // needs to be included first because of the Free macro
-#include <RcppArmadillo.h>
+#include "armadillo.h"
 #include <fstream>
 #include <stddef.h>
 #include <typeinfo>
