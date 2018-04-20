@@ -1,6 +1,7 @@
 # tfrecords
 
 [![Travis-CI Build Status](https://travis-ci.org/dfalbel/tfrecords.svg?branch=master)](https://travis-ci.org/dfalbel/tfrecords)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/dfalbel/tfrecords?branch=master&svg=true)](https://ci.appveyor.com/project/dfalbel/tfrecords)
 
 Write tfrecords from R
 
