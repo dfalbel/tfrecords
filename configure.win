@@ -1,0 +1,2 @@
+protoc -I "src/proto/" --cpp_out="src/" "src/proto/example.proto"
+protoc -I "src/proto/" --cpp_out="src/" "src/proto/feature.proto"
