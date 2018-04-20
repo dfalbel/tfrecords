@@ -1,15 +1,17 @@
 context("write_tfrecord_array")
 
-library(tensorflow)
-library(tfdatasets)
-library(reticulate)
-
-os <- import("os")
-x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
-
-temp <- tempfile()
-
 test_that("writing a list of arrays", {
+  
+  testthat::skip_on_appveyor()
+  
+  library(tensorflow)
+  library(tfdatasets)
+  library(reticulate)
+  
+  os <- import("os")
+  x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
+  
+  temp <- tempfile()
   
   x <- matrix(1:1000, nrow = 100, ncol = 10)
   y <- array(1:3000, dim = c(100, 5, 2, 3))
