@@ -4,3 +4,4 @@
 ^benchmark.*$
 ^\.travis\.yml$
 ^proto.*$
+^appveyor\.yml$

@@ -1,15 +1,20 @@
 context("write_tfrecord_matrix")
 
-library(tensorflow)
-library(tfdatasets)
-library(reticulate)
 
-os <- import("os")
-x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
-
-temp <- tempfile()
 
 test_that("writing a list of matrix", {
+  
+  
+  testthat::skip_on_appveyor()
+  
+  library(tensorflow)
+  library(tfdatasets)
+  library(reticulate)
+  
+  os <- import("os")
+  x <- os$environ$setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
+  
+  temp <- tempfile()
   
   x <- matrix(1:1000, nrow = 100, ncol = 10)
   y <- matrix(runif(1000), nrow = 100, ncol = 10)
@@ -35,11 +40,15 @@ test_that("writing a list of matrix", {
   expect_equivalent(y, x_recovered$y, tolerance = 2e-7) # it can be different because of floating points convertion
 })
 
-temp <- tempfile()
 
-set.seed(1)
 
 test_that("support for sparse matrix", {
+  
+  testthat::skip_on_appveyor()
+  
+  temp <- tempfile()
+  
+  set.seed(1)
   
   data <- list(
     x = matrix(1:1000, nrow = 100),
