@@ -40,6 +40,9 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
   Rcpp::List d;
   
   for (int i=0; i<n; i++) {
+    
+    Rcpp::checkUserInterrupt();
+    
     for (int j=0; j<l; j++) {
       
       d = desc[j];
