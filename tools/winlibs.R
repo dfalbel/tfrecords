@@ -6,4 +6,10 @@ if (!file.exists("../windows/protobuf-3.2.0/include/google/protobuf/descriptor.h
   dir.create("../windows", showWarnings = FALSE)
   unzip("lib.zip", exdir = "../windows")
   unlink("lib.zip")
+  
+  file.copy("../inst/proto/example.pb.cc", to = "example.pb.cc")
+  file.copy("../inst/proto/example.pb.h", to = "example.pb.h")
+  file.copy("../inst/proto/feature.pb.cc", to = "feature.pb.cc")
+  file.copy("../inst/proto/feature.pb.h", to = "feature.pb.h")
+  
 }
