@@ -30,7 +30,7 @@ bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
 } 
 
 // [[Rcpp::export]]
-bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path) {
+bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int n, const std::string path) {
   
   int l = data.length();
   std::vector<std::string> var_names = data.names();
@@ -38,7 +38,6 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
   Example example;
   RecordWriter writer(path);
   
-  Rcpp::List d;
   RProgress::RProgress pb(" :current / :total [:bar] ");
   pb.set_total(n);
   
@@ -49,7 +48,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
     
     for (int j=0; j<l; j++) {
       
-      d = desc[j];
+      Rcpp::List d = desc[j];
       std::string klass = d["class"];
       std::string type = d["type"];
       
@@ -58,12 +57,12 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
         
         if ( type == "integer" ) {
           
-          auto x = as<Rcpp::IntegerMatrix>(data[j]);
+          Rcpp::IntegerMatrix x = data[j];
           example.set_int_var(var_names[j], x(i,_));
           
         } else if ( type == "double" ) {
           
-          auto x = Rcpp::as<Rcpp::NumericMatrix>(data[j]);
+          Rcpp::NumericMatrix x = data[j];
           example.set_float_var(var_names[j], x(i,_));
           
         } else {
@@ -74,7 +73,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
         
       } else if (klass == "dgCMatrix") {
         
-        arma::sp_mat x = as<arma::sp_mat>(data[j]);
+        arma::sp_mat x = data[j];
         arma::sp_rowvec row = x.row(i);
         
         arma::sp_rowvec::const_iterator start = row.begin();
@@ -94,15 +93,15 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
         
       } else if (klass == "array") {
         
-        Rcpp::IntegerVector dim = as<Rcpp::IntegerVector>(d["dimension"]);
+        Rcpp::IntegerVector dim = d["dimension"];
         int dim_size = 1;
-        for (int d=1; d<dim.length(); d++) { // starts at 1 to avoid the first dim
-          dim_size = dim_size*dim[d]; 
+        for (int p=1; p<dim.length(); p++) { // starts at 1 to avoid the first dim
+          dim_size = dim_size*dim[p]; 
         }
         
         if (type == "integer") {
           
-          Rcpp::IntegerVector x = as<Rcpp::IntegerVector>(data[j]);
+          Rcpp::IntegerVector x = data[j];
           Rcpp::IntegerVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {
@@ -113,7 +112,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
           
         } else if (type == "double") {
           
-          Rcpp::NumericVector x = as<Rcpp::NumericVector>(data[j]);
+          Rcpp::NumericVector x = data[j];
           Rcpp::NumericVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {
