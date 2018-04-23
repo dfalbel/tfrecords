@@ -1,5 +1,6 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(progress)]]
 #include "example.pb.h" // needs to be included first because of the Free macro
 #include "armadillo.h"
 #include <fstream>
@@ -7,9 +8,9 @@
 #include <typeinfo>
 #include "RecordWriter.h"
 #include "Example.h"
+#include <RProgress.h>
 
 using namespace Rcpp;
-
 
 // [[Rcpp::export]]
 bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
@@ -38,7 +39,10 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
   RecordWriter writer(path);
   
   Rcpp::List d;
+  RProgress::RProgress pb(" :current / :total [:bar] ");
+  pb.set_total(n);
   
+  pb.tick(0);
   for (int i=0; i<n; i++) {
     
     Rcpp::checkUserInterrupt();
@@ -135,6 +139,7 @@ bool write_tfrecords_ (Rcpp::List data, Rcpp::List desc, int n, std::string path
     
     writer.write_record(example.serialize_to_string());
     example.clear();
+    pb.tick();
   }
   
   return true;
