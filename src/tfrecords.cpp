@@ -9,6 +9,8 @@
 #include "RecordWriter.h"
 #include "Example.h"
 #include <RProgress.h>
+#include <vector>
+#include <boost/any.hpp>
 
 using namespace Rcpp;
 
@@ -41,6 +43,36 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
   RProgress::RProgress pb(" :current / :total [:bar] ");
   pb.set_total(n);
   
+  std::vector<boost::any> datap(l);
+  for (int j=0; j<l; j++) {
+    
+    Rcpp::List d = desc[j];
+    std::string klass = d["class"];
+    std::string type = d["type"];
+    
+    if ( klass == "matrix" ) {
+      if ( type == "integer" ) {
+        datap[j] = as<Rcpp::IntegerMatrix>(data[j]);
+      } else if ( type == "double" ) {
+        datap[j] = as<Rcpp::NumericMatrix>(data[j]);
+      } else {
+        Rcpp::stop("Invalid matrix type: ", type);
+      }
+    } else if (klass == "dgCMatrix") {
+      datap[j] = as<arma::sp_mat>(data[j]);
+    } else if (klass == "array") {
+      if (type == "integer") {
+        datap[j] = as<Rcpp::IntegerVector>(data[j]);
+      } else if (type == "double") {
+        datap[j] = as<Rcpp::NumericVector>(data[j]);
+      } else {
+        Rcpp::stop("Invalid array type: ", type);
+      }
+    } else {
+      Rcpp::stop("Invalid class.");
+    }
+  }
+  
   pb.tick(0);
   for (int i=0; i<n; i++) {
     
@@ -57,12 +89,12 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         
         if ( type == "integer" ) {
           
-          Rcpp::IntegerMatrix x = data[j];
+          Rcpp::IntegerMatrix x = boost::any_cast<Rcpp::IntegerMatrix>(datap[j]);
           example.set_int_var(var_names[j], x(i,_));
           
         } else if ( type == "double" ) {
           
-          Rcpp::NumericMatrix x = data[j];
+          Rcpp::NumericMatrix x = boost::any_cast<Rcpp::NumericMatrix>(datap[j]);
           example.set_float_var(var_names[j], x(i,_));
           
         } else {
@@ -73,22 +105,22 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         
       } else if (klass == "dgCMatrix") {
         
-        arma::sp_mat x = data[j];
-        arma::sp_rowvec row = x.row(i);
+        arma::sp_mat x = boost::any_cast<arma::sp_mat>(datap[j]);
+        arma::sp_colvec row = x.col(i);
         
-        arma::sp_rowvec::const_iterator start = row.begin();
-        arma::sp_rowvec::const_iterator end   = row.end();
+        arma::sp_colvec::const_iterator start = row.begin();
+        arma::sp_colvec::const_iterator end   = row.end();
+      
+        std::vector<int> index;
+        std::vector<double> value;
         
-        Rcpp::IntegerVector index;
-        Rcpp::NumericVector value;
-        
-        for (arma::sp_rowvec::const_iterator it = start; it != end; ++it) {
-          index.push_back(it.col());
+        for (arma::sp_colvec::const_iterator it = start; it != end; ++it) {
+          index.push_back(it.row());
           value.push_back(*it);
         }
         
-        example.set_int_var("index_" + var_names[j], index);
-        example.set_float_var("value_" + var_names[j], value);
+        example.set_int_var("index_" + var_names[j], Rcpp::wrap(index));
+        example.set_float_var("value_" + var_names[j], Rcpp::wrap(value));
         
         
       } else if (klass == "array") {
@@ -101,7 +133,7 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         
         if (type == "integer") {
           
-          Rcpp::IntegerVector x = data[j];
+          Rcpp::IntegerVector x = boost::any_cast<Rcpp::IntegerVector>(datap[j]);
           Rcpp::IntegerVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {
@@ -112,7 +144,7 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
           
         } else if (type == "double") {
           
-          Rcpp::NumericVector x = data[j];
+          Rcpp::NumericVector x = boost::any_cast<Rcpp::NumericVector>(datap[j]);
           Rcpp::NumericVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {

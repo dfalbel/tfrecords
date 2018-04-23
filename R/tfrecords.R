@@ -28,6 +28,7 @@ write_tfrecords <- function (data, path) {
   desc <- lapply(data, get_class_and_type)
   n_obs <- get_n_obs(data)
   data <- transpose_arrays(data)
+  data <- transpose_sparse_matrix(data)
   invisible(write_tfrecords_(data, desc, n_obs, path))
 }
 
@@ -39,6 +40,18 @@ transpose_arrays <- function(data) {
   lapply(data, function(x) {
     if(is.array(x) & !is.matrix(x))
       aperm(x, length(dim(x)):1)
+    else
+      x
+  })
+}
+
+#' Transpose sparse matrix
+#'
+#'
+transpose_sparse_matrix <- function(data) {
+  lapply(data, function(x) {
+    if(inherits(x, "dgCMatrix"))
+      Matrix::t(x)
     else
       x
   })
