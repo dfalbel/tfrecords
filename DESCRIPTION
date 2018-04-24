@@ -7,7 +7,7 @@ Depends: R (>= 3.4.3)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-LinkingTo: Rcpp, BH, RcppArmadillo, progress
+LinkingTo: Rcpp, BH, RcppEigen, progress
 Imports: Rcpp, Matrix
 RoxygenNote: 6.0.1
 Suggests: testthat, tensorflow, tfdatasets, fs, readr,

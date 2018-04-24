@@ -1,16 +1,21 @@
 // [[Rcpp::depends(BH)]]
-// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::depends(progress)]]
 #include "example.pb.h" // needs to be included first because of the Free macro
-#include "armadillo.h"
+#include "RcppEigen.h"
 #include <fstream>
 #include <stddef.h>
 #include <typeinfo>
 #include "RecordWriter.h"
 #include "Example.h"
 #include <RProgress.h>
+#include <vector>
 
 using namespace Rcpp;
+typedef Eigen::MappedSparseMatrix<double> MSpMat;
+typedef MSpMat::InnerIterator InIterMat;
+typedef Eigen::SparseVector<double> SpVec;
+typedef SpVec::InnerIterator InIterVec;
 
 // [[Rcpp::export]]
 bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
@@ -73,22 +78,19 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         
       } else if (klass == "dgCMatrix") {
         
-        arma::sp_mat x = data[j];
-        arma::sp_rowvec row = x.row(i);
+        MSpMat x = data[j];
+        SpVec row = x.row(i);
         
-        arma::sp_rowvec::const_iterator start = row.begin();
-        arma::sp_rowvec::const_iterator end   = row.end();
+        std::vector<int> index;
+        std::vector<double> value;
         
-        Rcpp::IntegerVector index;
-        Rcpp::NumericVector value;
-        
-        for (arma::sp_rowvec::const_iterator it = start; it != end; ++it) {
-          index.push_back(it.col());
-          value.push_back(*it);
+        for (InIterVec i_(row); i_; ++i_){
+          index.push_back(i_.index());
+          value.push_back(i_.value());
         }
         
-        example.set_int_var("index_" + var_names[j], index);
-        example.set_float_var("value_" + var_names[j], value);
+        example.set_int_var("index_" + var_names[j], Rcpp::wrap(index));
+        example.set_float_var("value_" + var_names[j], Rcpp::wrap(value));
         
         
       } else if (klass == "array") {
