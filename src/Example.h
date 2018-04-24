@@ -19,7 +19,7 @@ public:
     
   }
   
-  void set_int_var (std::string var_name, Rcpp::IntegerVector values) {
+  void set_int_var (const std::string & var_name, const Rcpp::IntegerVector & values) {
     
     tensorflow::Feature feat;
     auto feat_values = feat.mutable_int64_list();
@@ -32,7 +32,7 @@ public:
     
   }
   
-  void set_float_var (std::string var_name, Rcpp::NumericVector values) {
+  void set_float_var (const std::string & var_name, const Rcpp::NumericVector & values) {
     
     tensorflow::Feature feat;
     auto feat_values = feat.mutable_float_list();
