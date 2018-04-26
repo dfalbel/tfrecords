@@ -1,16 +1,23 @@
 Package: tfrecords
-Title: What the Package Does (one line, title case)
+Title: Write TFRecords from R
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "dfalbel@gmail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = c("aut", "cre"))
+Description: Allows writing tfrecords files from R efficiently and with a consistent API.
 Depends: R (>= 3.4.3)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 LinkingTo: Rcpp, BH, RcppEigen, progress
-Imports: Rcpp, Matrix
+Imports: Rcpp
 RoxygenNote: 6.0.1
-Suggests: testthat, tensorflow, tfdatasets, fs, readr,
+Suggests: 
+    testthat, 
+    tensorflow, 
+    tfdatasets, 
+    readr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    Matrix
 VignetteBuilder: knitr
+SystemRequirements:	ProtoBuf libraries and compiler version 3.0.0 or later; 
+    On Debian/Ubuntu these can be installed from source.

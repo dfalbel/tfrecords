@@ -1,6 +1,6 @@
 library(tensorflow)
 
-x <- matrix(1:10000, nrow = 1000)
+x <- matrix(1:1000000, nrow = 100000)
 
 write_tfrecords_tf <- function(x, path) {
   
@@ -25,7 +25,7 @@ tf$VERSION # finish loading TF
 microbenchmark::microbenchmark(
   tfrecords = tfrecords::write_tfrecords(list(x = x), "example.tfrecords"),
   tensorflow = write_tfrecords_tf(x, "example2.tfrecords"), 
-  times = 10
+  times = 5
 )
 
 identical(

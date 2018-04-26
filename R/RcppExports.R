@@ -5,8 +5,8 @@ write_tfrecord <- function(x, path) {
     .Call('_tfrecords_write_tfrecord', PACKAGE = 'tfrecords', x, path)
 }
 
-write_tfrecords_ <- function(data, description, n, path) {
-    .Call('_tfrecords_write_tfrecords_', PACKAGE = 'tfrecords', data, description, n, path)
+write_tfrecords_ <- function(data, description, n, path, interactive) {
+    .Call('_tfrecords_write_tfrecords_', PACKAGE = 'tfrecords', data, description, n, path, interactive)
 }
 
 tfrecord_shutdown <- function() {

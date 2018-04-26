@@ -19,7 +19,9 @@ NULL
 #' data <- list(
 #'  x = matrix(1:1000, nrow = 100),
 #'  y = matrix(1:1000/2.1, nrow = 100),
-#'  z = Matrix::rsparsematrix(nrow = 100, ncol = 10, density = 0.3)
+#'  z = Matrix::rsparsematrix(nrow = 100, ncol = 10, density = 0.3),
+#'  a = array(1:10000, dim = c(100, 10, 10)),
+#'  b = array(runif(10000), dim = c(100, 10, 10))
 #'  )
 #'  
 #'  write_tfrecords(data, "example.tfrecords")
@@ -28,7 +30,8 @@ write_tfrecords <- function (data, path) {
   desc <- lapply(data, get_class_and_type)
   n_obs <- get_n_obs(data)
   data <- transpose_arrays(data)
-  invisible(write_tfrecords_(data, desc, n_obs, path))
+  invisible(write_tfrecords_(data, desc, n_obs, path, 
+                             interactive = interactive()))
 }
 
 #' Transpose arrays

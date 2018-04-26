@@ -1,18 +1,13 @@
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::depends(progress)]]
+
 #include "example.pb.h" // needs to be included first because of the Free macro
 #include "RcppEigen.h"
 #include "RecordWriter.h"
 #include "Example.h"
 #include <RProgress.h>
 #include <vector>
-
-using namespace Rcpp;
-typedef Eigen::MappedSparseMatrix<double> MSpMat;
-typedef MSpMat::InnerIterator InIterMat;
-typedef Eigen::SparseVector<double> SpVec;
-typedef SpVec::InnerIterator InIterVec;
 
 // [[Rcpp::export]]
 bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
@@ -46,7 +41,11 @@ struct Desc {
 };
 
 // [[Rcpp::export]]
-bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &description, const int n, const std::string path) {
+bool write_tfrecords_ (const Rcpp::List &data, 
+                       const Rcpp::List &description, 
+                       const int n, 
+                       const std::string path,
+                       bool interactive) {
   
   int len = data.length();
   std::vector<std::string> var_names = data.names();
@@ -88,8 +87,11 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &description, co
   // Iteration over all elements
   
   RProgress::RProgress pb(" :current / :total [:bar] ");
-  pb.set_total(n);
-  pb.tick(0);
+  if (interactive) {
+    pb.set_total(n);
+    pb.tick(0);  
+  }
+  
   
   for (int i=0; i<n; i++) {
     
@@ -172,7 +174,10 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &description, co
     
     writer.write_record(example.serialize_to_string());
     example.clear();
-    pb.tick();
+    
+    if (interactive) {
+      pb.tick(); 
+    }
   }
   
   return true;
