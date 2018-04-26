@@ -19,16 +19,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // write_tfrecords_
-bool write_tfrecords_(const Rcpp::List& data, const Rcpp::List& desc, const int n, const std::string path);
-RcppExport SEXP _tfrecords_write_tfrecords_(SEXP dataSEXP, SEXP descSEXP, SEXP nSEXP, SEXP pathSEXP) {
+bool write_tfrecords_(const Rcpp::List& data, const Rcpp::List& description, const int n, const std::string path);
+RcppExport SEXP _tfrecords_write_tfrecords_(SEXP dataSEXP, SEXP descriptionSEXP, SEXP nSEXP, SEXP pathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type data(dataSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type desc(descSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type description(descriptionSEXP);
     Rcpp::traits::input_parameter< const int >::type n(nSEXP);
     Rcpp::traits::input_parameter< const std::string >::type path(pathSEXP);
-    rcpp_result_gen = Rcpp::wrap(write_tfrecords_(data, desc, n, path));
+    rcpp_result_gen = Rcpp::wrap(write_tfrecords_(data, description, n, path));
     return rcpp_result_gen;
 END_RCPP
 }
