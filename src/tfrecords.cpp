@@ -3,9 +3,6 @@
 // [[Rcpp::depends(progress)]]
 #include "example.pb.h" // needs to be included first because of the Free macro
 #include "RcppEigen.h"
-#include <fstream>
-#include <stddef.h>
-#include <typeinfo>
 #include "RecordWriter.h"
 #include "Example.h"
 #include <RProgress.h>
@@ -34,57 +31,92 @@ bool write_tfrecord(Rcpp::IntegerMatrix x, std::string path) {
   return true;
 } 
 
+struct DataTypes {
+  Rcpp::NumericVector num_vec;
+  Rcpp::NumericMatrix num_mat;
+  Rcpp::IntegerVector int_vec;
+  Rcpp::IntegerMatrix int_mat;
+  Eigen::SparseMatrix<double, Eigen::RowMajor> sp_mat;
+};
+
+struct Desc {
+  std::string clss;
+  std::string type;
+  Rcpp::IntegerVector dim;
+};
+
 // [[Rcpp::export]]
-bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int n, const std::string path) {
+bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &description, const int n, const std::string path) {
   
-  int l = data.length();
+  int len = data.length();
   std::vector<std::string> var_names = data.names();
   
   Example example;
   RecordWriter writer(path);
   
+  // casting list elements
+  
+  std::vector<Desc> d(len);
+  std::vector<DataTypes> data_(len);
+  
+  for (int j=0; j<len; j++) {
+    Rcpp::List desc = description[j];
+    d[j].clss = Rcpp::as<std::string>(desc["class"]);
+    d[j].type = Rcpp::as<std::string>(desc["type"]);
+    
+    std::string clss = d[j].clss;
+    std::string type = d[j].type;
+    
+    if (clss == "matrix") {
+      if (type == "integer") {
+        data_[j].int_mat = Rcpp::as<Rcpp::IntegerMatrix>(data[j]);
+      } else if (type == "double") {
+        data_[j].num_mat = Rcpp::as<Rcpp::NumericMatrix>(data[j]);
+      }
+    } else if (clss == "dgCMatrix") {
+      data_[j].sp_mat = Rcpp::as<Eigen::MappedSparseMatrix<double>>(data[j]);
+    } else if (clss == "array") {
+      d[j].dim = desc["dimension"];
+      if (type == "integer") {
+        data_[j].int_vec = Rcpp::as<Rcpp::IntegerVector>(data[j]);
+      } else if (type == "double") {
+        data_[j].num_vec = Rcpp::as<Rcpp::NumericVector>(data[j]);
+      }
+    }
+  }
+  
+  // Iteration over all elements
+  
   RProgress::RProgress pb(" :current / :total [:bar] ");
   pb.set_total(n);
-  
   pb.tick(0);
+  
   for (int i=0; i<n; i++) {
     
     Rcpp::checkUserInterrupt();
     
-    for (int j=0; j<l; j++) {
+    for (int j=0; j<len; j++) {
       
-      Rcpp::List d = desc[j];
-      std::string klass = d["class"];
-      std::string type = d["type"];
+      std::string clss = d[j].clss;
+      std::string type = d[j].type;
       
-      if ( klass == "matrix" ) {
-        
-        
-        if ( type == "integer" ) {
-          
-          Rcpp::IntegerMatrix x = data[j];
-          example.set_int_var(var_names[j], x(i,_));
-          
-        } else if ( type == "double" ) {
-          
-          Rcpp::NumericMatrix x = data[j];
-          example.set_float_var(var_names[j], x(i,_));
-          
+      if (clss == "matrix") {
+        if (type == "integer") {
+          example.set_int_var(var_names[j], data_[j].int_mat(i, _));
+        } else if (type == "double") {
+          example.set_float_var(var_names[j], data_[j].num_mat(i, _));
         } else {
-          
           Rcpp::stop("Invalid matrix type: ", type);
-          
         }
-        
-      } else if (klass == "dgCMatrix") {
-        
-        MSpMat x = data[j];
-        SpVec row = x.row(i);
+  
+      } else if (clss == "dgCMatrix") {
+      
+        Eigen::SparseVector<double> row = data_[j].sp_mat.row(i);
         
         std::vector<int> index;
         std::vector<double> value;
         
-        for (InIterVec i_(row); i_; ++i_){
+        for (Eigen::SparseVector<double>::InnerIterator i_(row); i_; ++i_){
           index.push_back(i_.index());
           value.push_back(i_.value());
         }
@@ -92,10 +124,10 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         example.set_int_var("index_" + var_names[j], Rcpp::wrap(index));
         example.set_float_var("value_" + var_names[j], Rcpp::wrap(value));
         
+      } else if (clss == "array") {
         
-      } else if (klass == "array") {
+        Rcpp::IntegerVector dim = d[j].dim;
         
-        Rcpp::IntegerVector dim = d["dimension"];
         int dim_size = 1;
         for (int p=1; p<dim.length(); p++) { // starts at 1 to avoid the first dim
           dim_size = dim_size*dim[p]; 
@@ -103,7 +135,7 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
         
         if (type == "integer") {
           
-          Rcpp::IntegerVector x = data[j];
+          Rcpp::IntegerVector x = data_[j].int_vec;
           Rcpp::IntegerVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {
@@ -114,7 +146,7 @@ bool write_tfrecords_ (const Rcpp::List &data, const Rcpp::List &desc, const int
           
         } else if (type == "double") {
           
-          Rcpp::NumericVector x = data[j];
+          Rcpp::NumericVector x = data_[j].num_vec;
           Rcpp::NumericVector res(dim_size);
           
           for (int l = 0; l<dim_size; l++) {
