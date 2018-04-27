@@ -6,11 +6,7 @@
 
 # Library settings
 PKG_CONFIG_NAME="protobuf"
-PKG_DEB_NAME="libprotobuf-dev"
-PKG_RPM_NAME=""
-PKG_CSW_NAME=""
 PKG_BREW_NAME="protobuf"
-PKG_TEST_FILE="tools/version.c"
 PKG_LIBS="-lprotobuf"
 PKG_CFLAGS=""
 
@@ -57,9 +53,10 @@ echo "Using PKG_CFLAGS=$PKG_CFLAGS"
 if [ $? -ne 0 ]; then
   echo "------------------------- ANTICONF ERROR ---------------------------"
   echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
-  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)"
-  echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS, RHEL)"
-  echo " * csw: $PKG_CSW_NAME (Solaris)"
+  echo " * deb: (Debian, Ubuntu, etc) install from source. see instructions below"
+  echo " * rpm: (Fedora, CentOS, RHEL) install from source. see instructions below"
+  echo " * csw: (Solaris) install from source. see instructions below"
+  echo " * To install from source, see instructions here: https://github.com/dfalbel/tfrecords#ubuntu"
   echo " * brew: $PKG_BREW_NAME (Mac OSX)"
   echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
   echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"
