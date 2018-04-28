@@ -4,7 +4,9 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = c("aut", "cre")),
     person("Jeroen", "Ooms", role = c("aut", "cph"), 
-            comment = "Configure scripts and Windows building infrastructure.")
+            comment = "Configure scripts and Windows building infrastructure."),
+    person("Daryle",  "Walker", role =c("aut", "cph"),
+           comment = "Boost CRC library crc.hpp header file")
     )
 Description: Allows writing tfrecords files from R efficiently and with a consistent API.
 Depends: R (>= 3.4.3)
