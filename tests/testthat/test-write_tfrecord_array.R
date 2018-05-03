@@ -2,7 +2,7 @@ context("write_tfrecord_array")
 
 test_that("writing a list of arrays", {
   
-  testthat::skip_on_appveyor()
+  testthat::skip_if_not(reticulate::py_module_available("tensorflow"))
   
   library(tensorflow)
   library(tfdatasets)

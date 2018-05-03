@@ -1,11 +1,8 @@
 context("write_tfrecord_matrix")
 
-
-
 test_that("writing a list of matrix", {
   
-  
-  testthat::skip_on_appveyor()
+  testthat::skip_if_not(reticulate::py_module_available("tensorflow"))
   
   library(tensorflow)
   library(tfdatasets)
@@ -44,7 +41,7 @@ test_that("writing a list of matrix", {
 
 test_that("support for sparse matrix", {
   
-  testthat::skip_on_appveyor()
+  testthat::skip_if_not(reticulate::py_module_available("tensorflow"))
   
   temp <- tempfile()
   

@@ -4,7 +4,7 @@ context("compare to python")
 
 test_that("writing correctly compared to python", {
   
-  testthat::skip_on_appveyor()
+  testthat::skip_if_not(reticulate::py_module_available("tensorflow"))
   
   # creating reference file -------------------------------------------------
   library(tensorflow)
