@@ -5,11 +5,11 @@ Authors@R: c(
     person("Daniel", "Falbel", email = "dfalbel@gmail.com", role = c("aut", "cre")),
     person("Jeroen", "Ooms", role = c("aut", "cph"), 
             comment = "Configure scripts and Windows building infrastructure."),
-    person("Daryle",  "Walker", role =c("aut", "cph"),
+    person("Daryle",  "Walker", role = c("aut", "cph"),
            comment = "Boost CRC library crc.hpp header file")
     )
-Description: Allows writing tfrecords files from R efficiently and with a consistent API.
-Depends: R (>= 3.4.3)
+Description: Allows writing TFRecords files from R efficiently and with a consistent API.
+Depends: R (>= 3.3)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -23,7 +23,7 @@ Suggests:
     readr,
     knitr,
     rmarkdown,
-    Matrix
+    Matrix,
+    reticulate
 VignetteBuilder: knitr
-SystemRequirements:	ProtoBuf libraries and compiler version 3.0.0 or later; 
-    On Debian/Ubuntu these can be installed from source.
+SystemRequirements:	protobuf3
