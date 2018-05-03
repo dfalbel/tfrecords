@@ -22,7 +22,7 @@ cache:
 
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip2.7 install --upgrade --ignore-installed --user travis pip setuptools wheel virtualenv protobuf ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then easy_install pip ;fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo easy_install pip ;fi
   - R -e 'tensorflow::install_tensorflow()'
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash tools/install-protobuf.sh ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update              ; fi
