@@ -23,5 +23,10 @@ cache:
 before_script:
   - pip2.7 install --upgrade --ignore-installed --user travis pip setuptools wheel virtualenv protobuf
   - R -e 'tensorflow::install_tensorflow()'
-  - bash tools/install-protobuf.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; bash tools/install-protobuf.sh
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update              ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install protobuf    ; fi
 
+os:
+  - linux
+  - osx
